@@ -8,3 +8,5 @@ class Member {
         this.totalHours = totalHours;
     }
 }
+
+module.exports = Member;
