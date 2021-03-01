@@ -2,6 +2,7 @@
 
 const firebase = require('../db');
 const Member = require('../models/member');
+const Volunteer = require('../models/volunteer')
 const firestore = firebase.firestore();
 
 const addMember = async(req, res, next) => {
@@ -14,6 +15,20 @@ const addMember = async(req, res, next) => {
     }
 }
 
+const getMember = async (req, res, next) => {
+    try{
+        const id = req.params.id;
+        const member = await firestore.collection('members').doc(id);
+        const data = await member.get();
+        if(!data.exists){
+            res.status(404).send('Member with the given ID not found')
+        }else{
+            res.send(data.data());
+        }
+    }catch (error){
+        res.status(400).send(error.message);
+    }
+}
 const getAllMembers = async (req, res, next) => {
     try{
         const member = await firestore.collection('members');
@@ -37,21 +52,6 @@ const getAllMembers = async (req, res, next) => {
         }
     } catch (error) {
         res.status(400).send(error.massage);
-    }
-}
-
-const getMember = async (req, res, next) => {
-    try{
-        const id = req.params.id;
-        const member = await firestore.collection('members').doc(id);
-        const data = await member.get();
-        if(!data.exists){
-            res.status(404).send('Member with the given ID not found')
-        }else{
-            res.send(data.data());
-        }
-    }catch (error){
-        res.status(400).send(error.message);
     }
 }
 
@@ -83,10 +83,13 @@ const getMemberByEmail = async (req, res, next) => {
         });
 }
 
+
+
+
 module.exports = {
     addMember,
-    getAllMembers,
     getMember,
     updateMember,
-    getMemberByEmail
+    getMemberByEmail,
+    getAllMembers,
 }
