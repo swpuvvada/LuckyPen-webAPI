@@ -1,0 +1,85 @@
+doctype html
+html 
+    head
+        title Welcome to YHAA
+        link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
+        link(href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection")
+        link(href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection")
+    body
+        nav(class="light-blue lighten-1" role="navigation")
+            div(class="nav-wrapper container")
+                a(id="logo-container" href="#" class="brand-logo") YHAA
+                ul(class="right hide-on-med-and-down")
+                    li 
+                        a(href="#") Sign-out
+        
+        div(class="section no-pad-bot" id="index-banner")
+            div(class="container")
+                h3(class="header blue-text") #{FullName}
+                    h6(class="header col s11 light") #{Email} 
+                    h6(class="header col s11 light") #{Title}
+                div(class="row center")
+                    div(class="col s12 m15")
+                        div(class="card-panel light-grey")
+                            h3(class="header blue-text") Volunteer Hours Requests
+                            div(class="row center")
+                                table
+                                    thead 
+                                        tr
+                                            th Date Requested
+                                            th Name 
+                                            th # of Hours
+                                            th Accept/Deny
+                                    tbody 
+                                        tr 
+                                            td 10/19/2020
+                                            td Sophia 
+                                            td 2
+                                            td 
+                                                label
+                                                    input(type="checkbox" class="filled-in" checked="checked")
+
+        div(class="section no-pad-bot" id="index-banner")    
+            div(class="container")
+                div(class="row center")
+                    div(class="col s12 m15")
+                        div(class="card-panel light-grey")
+                            h3(class="header blue-text") Request History
+                            div(class="row center") 
+                            table 
+                                thead 
+                                    th Date (When A/D)
+                                    th Name 
+                                    th # of Hours 
+                                    th Accept/Deny
+                                tbody
+                                    each request in requests
+                                        tr
+                                            td= request.dateRequested 
+                                            td= request.name 
+                                            td= request.hours 
+                                            td= request.isAccepted
+
+        div(class="section no-pad-bot" id="index-banner")    
+            div(class="container")
+                div(class="row center")
+                    div(class="col s12 m15")
+                        div(class="card-panel light-grey")
+                            h3(class="header blue-text") Member Info
+                            div(class="row center") 
+                            table 
+                                thead 
+                                    th Name
+                                    th Email 
+                                    th Total Hours 
+                                tbody 
+                                    each member in members
+                                        tr
+                                            td= member.name 
+                                            td= member.email 
+                                            td= member.hours
+
+        script(src="https://code.jquery.com/jquery-2.1.1.min.js")
+        script(src="js/materialize.js")
+        script(src="js/init.js")
+
