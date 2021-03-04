@@ -1,5 +1,6 @@
 'use strict';
 const path = require('path');
+const {getAllMembersInternal} = require('./memberController');
 
 const getMemberPage = async(req, res, next) => {
     try {
@@ -18,11 +19,12 @@ const getMemberPage = async(req, res, next) => {
 
 const getAdminPage = async(req, res, next) => {
     try {
-        let members = [
-            {name: 'Sophia M', email: 'sd@gmail.com', hours: 2},
-            {name: 'Cathy Wu', email: 'cathywu@gmail.com', hours: 3},
-            {name: 'Swetha P', email: 'swpuvvad@gmail.com', hours: 6}
-        ];
+        // let members = [
+        //     {name: 'Sophia M', email: 'sd@gmail.com', totalHours: 2},
+        //     {name: 'Cathy Wu', email: 'cathywu@gmail.com', totalHours: 3},
+        //     {name: 'Swetha P', email: 'swpuvvad@gmail.com', totalHours: 6}
+        // ];
+        let members = await getAllMembersInternal();
 
         let requests = [
                 {dateRequested: '2020-10-20', name: 'Sophia D', hours: 8, isAccepted: 'A'},

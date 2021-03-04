@@ -31,27 +31,34 @@ const getMember = async (req, res, next) => {
 }
 const getAllMembers = async (req, res, next) => {
     try{
+        let memberArray = await getAllMembersInternal();
+        res.send(memberArray);
+    } catch (error) {
+        res.status(400).send(error.massage);
+    }
+}
+
+const getAllMembersInternal = async () => {
+    try{
         const member = await firestore.collection('members');
         const data = await member.get()
         const memberArray = [];
-        if(data.empty){
-            res.ststus(404).send('No member record found');
-        }else{
+        if(!data.empty){
             data.forEach(doc => {
                     const member = new Member(
                         doc.id,
                         doc.data().firstName,
                         doc.data().lastName,
                         doc.data().email,
-                        doc.data().password,
-                        doc.data().totalHours,
+                        null,
+                        doc.data().totalHours
                     );
                     memberArray.push(member);
             });
-            res.send(memberArray);
         }
+        return (memberArray);
     } catch (error) {
-        res.status(400).send(error.massage);
+        console.log(error.massage);
     }
 }
 
@@ -92,4 +99,5 @@ module.exports = {
     updateMember,
     getMemberByEmail,
     getAllMembers,
+    getAllMembersInternal
 }
