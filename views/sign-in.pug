@@ -1,0 +1,45 @@
+doctype html
+
+head
+  meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
+  meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1.0')
+  title Starter Template - Materialize
+  // CSS
+  link(href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet')
+  link(href='css/materialize.css' type='text/css' rel='stylesheet' media='screen,projection')
+  link(href='css/style.css' type='text/css' rel='stylesheet' media='screen,projection')
+body
+nav(class="white" role="navigation")
+            div(class="nav-wrapper container")
+            
+#login-page.row
+  .col.s12.z-depth-6.card-panel
+    form.login-form
+     div(class="container")
+      div(class="row center")
+        .input-field.col.s12
+          i.material-icons.prefix mail_outline
+          input#email.validate(type='email')
+          label(for='email' data-error='wrong' data-success='right') Email
+      div(class="row center")
+        .input-field.col.s12
+          i.material-icons.prefix lock_outline
+          input#password(type='password')
+          label(for='password') Password
+      div(class="row center")
+        .input-field.col.s12.m12.l12.login-text
+          input#remember-me(type='checkbox')
+          label(for='remember-me') Remember me
+      div(class="row center")
+        .input-field.col.s12
+          a.btn.waves-effect.waves-light.col.s12(href='#') Login
+      div(class="row center")
+        .input-field.col.s6.m6.l6
+          p.margin.medium-small
+            a(href='#') Register Now!
+        .input-field.col.s6.m6.l6
+          p.margin.right-align.medium-small
+            a(href='#') Forgot password?
+script(src='https://code.jquery.com/jquery-2.1.1.min.js')
+script(src='js/materialize.js')
+script(src='js/init.js')

@@ -1,10 +1,16 @@
 'use strict';
 const path = require('path');
-const pug = require('pug');
 
 const getMemberPage = async(req, res, next) => {
     try {
-        res.sendFile(path.join(__dirname+'/../static/member.html'));
+        let requestHistory = [
+            {dateRequested: '2020-10-20', status: 'A', hoursRequested: 8,},
+            {dateRequested: '2020-11-05', status: 'D', hoursRequested: 5,},
+            {dateRequested: '2020-11-21', status: 'D', hoursRequested: 3,},
+            {dateRequested: '2020-12-20', status: 'A', hoursRequested: 6,}
+        ];
+        res.render('member', {FullName: 'Medha Vadlamudi', Email: 'medvad@gmail.com', TotalHours: 'Hours: 14' , requestHistory: requestHistory});
+        //res.sendFile(path.join(__dirname+'/../static/member.html'));
     } catch(error) {
         res.status(404).send(error.message);
     }
@@ -30,8 +36,16 @@ const getAdminPage = async(req, res, next) => {
         res.status(404).send(error.message);
     }
 }
+const getSignInPage = async(req, res, next) => {
+    try {
+        res.render('sign-in');
+    } catch(error) {
+        res.status(404).send(error.message);
+    }
+}
 
 module.exports = {
     getMemberPage,
-    getAdminPage
+    getAdminPage,
+    getSignInPage
 }
