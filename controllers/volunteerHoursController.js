@@ -20,29 +20,43 @@ const addVolunteerHour = async (req, res, next) => {
 
 // get all volunteer hour history (for members)
 const getHoursRecordByEmail = async (req, res, next) => {
+    try{
+        let volunteerArray = await getHoursRecordbyEmailInternal();
+        res.sent(volunteerArray);
+    } catch (error) {
+        res.status(400).send(error.message);
+    }
+
+}
+
+const getHoursRecordbyEmailInternal = async (emailId) => {
     let hours = [];
-    const emailId = req.params.emailId;
-    await firestore.collection('volunteerHours').where('emailId', '==', emailId)
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const hour = new Volunteer(
-                    doc.id,
-                    doc.data().emailId,
-                    doc.data().dateRequested,
-                    doc.data().dateReviewed,
-                    doc.data().hoursRequested,
-                    doc.data().isAccepted,
-                    doc.data().reviewedBy
-                );
-                hours.push(hour);
-            });
-            res.send(hours);
+    try{
+        await firestore.collection('volunteerHours').where('emailId', '==', emailId)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const hour = new Volunteer(
+                        doc.id,
+                        doc.data().emailId,
+                        doc.data().dateRequested,
+                        doc.data().dateReviewed,
+                        doc.data().hoursRequested,
+                        doc.data().isAccepted,
+                        doc.data().reviewedBy
+                    );
+                    hours.push(hour);
+                });
         })
         .catch((error) => {
-            res.status(400).send(error.message);
+            console.log(error.message);
         });
+    } catch (error) {
+        console.log(error.message);
+    }
+    return hours;
 }
+
 
 // Accept/Deny volunteer hour request (used by Admin)
 const updateHoursRecord = async (req, res, next) => {
@@ -59,29 +73,70 @@ const updateHoursRecord = async (req, res, next) => {
 
 // get Volunteer hours that need to reviewed (used by Admin)
 const getHoursToBeReviewed = async (req, res, next) => {
+    try{
+        let volunteerRequestArray = await getHoursToBeReveiwedInternal();
+        res.send(volunteerRequestArray);
+    }catch (error) {
+        res.status(400).send(error.message);
+    }
+}
+
+const getHoursToBeReveiwedInternal = async () => {
     let hours = [];
-    await firestore.collection('volunteerHours').where("isAccepted", '==', null)
-        .get()
-        .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-                const hour = new VolunteerRequest(
-                    doc.id,
-                    doc.data().emailId,
-                    doc.data().dateRequested,
-                    doc.data().hoursRequested
-                );
-                hours.push(hour);
+    try{
+        await firestore.collection('volunteerHours').where("isAccepted", '==', null)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const hour = new VolunteerRequest(
+                        doc.id,
+                        doc.data().emailId,
+                        doc.data().dateRequested,
+                        doc.data().hoursRequested
+                    );
+                    hours.push(hour);
+                });
+            })
+            .catch((error) => {
+                res.status(400).send(error.message);
             });
-            res.send(hours);
-        })
-        .catch((error) => {
-            res.status(400).send(error.message);
-        });
+    } catch (error) {
+        console.log(error.massage);
+    }
+    return hours;
+}
+
+const getHoursReveiwedInternal = async () => {
+    let hours = [];
+    try{
+        await firestore.collection('volunteerHours').where("isAccepted", '!=', null)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    const hour = new VolunteerRequest(
+                        doc.id,
+                        doc.data().emailId,
+                        doc.data().dateRequested,
+                        doc.data().hoursRequested
+                    );
+                    hours.push(hour);
+                });
+            })
+            .catch((error) => {
+                res.status(400).send(error.message);
+            });
+    } catch (error) {
+        console.log(error.massage);
+    }
+    return hours;
 }
 
 module.exports = {
     addVolunteerHour,
     getHoursRecordByEmail,
     updateHoursRecord,
-    getHoursToBeReviewed
+    getHoursToBeReviewed,
+    getHoursRecordbyEmailInternal,
+    getHoursToBeReveiwedInternal,
+    getHoursReveiwedInternal 
 }

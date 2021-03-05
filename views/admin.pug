@@ -26,18 +26,19 @@ html
                                 table
                                     thead 
                                         tr
+                                            th Email ID
                                             th Date Requested
-                                            th Name 
-                                            th # of Hours
+                                            th Hours Requested
                                             th Accept/Deny
                                     tbody 
-                                        tr 
-                                            td 10/19/2020
-                                            td Sophia 
-                                            td 2
-                                            td 
-                                                label
-                                                    input(type="checkbox" class="filled-in" checked="checked")
+                                        each request in requestPending
+                                            tr 
+                                                td= request.emailId
+                                                td= request.dateRequested 
+                                                td= request.hoursRequested
+                                                td
+                                                    label
+                                                        input(type="checkbox" class="filled-in" checked="checked")
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")
@@ -48,17 +49,19 @@ html
                             div(class="row center") 
                             table 
                                 thead 
-                                    th Date (When A/D)
-                                    th Name 
-                                    th # of Hours 
-                                    th Accept/Deny
+                                    th Email ID
+                                    th Date Requested
+                                    th Hours Requested
+                                    th Accept/Deny 
+                                    th Reveiwed By
                                 tbody
-                                    each request in requests
+                                    each request in requestHistory
                                         tr
-                                            td= request.dateRequested 
-                                            td= request.name 
-                                            td= request.hours 
+                                            td= request.emailId 
+                                            td= request.dateRequested
+                                            td= request.hoursRequested 
                                             td= request.isAccepted
+                                            td= request.reveiwedBy
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")
