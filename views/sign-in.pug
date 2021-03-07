@@ -1,45 +1,70 @@
-doctype html
+html 
+  head 
+    title Welcome to YHAA
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+    link(href='https://fonts.googleapis.com/icon?family=Material+Icons', rel='stylesheet')
+    script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.1.min.js')
+    link(rel='stylesheet', href='css/materialize.css')
+    style(type='text/css').
+      body{
+                      padding: 0;
+                      margin: 0;
+                      background: #ddd;
+              }
+              .btn{
+                      margin-top: 10px;
 
-head
-  meta(http-equiv='Content-Type' content='text/html; charset=UTF-8')
-  meta(name='viewport' content='width=device-width, initial-scale=1, maximum-scale=1.0')
-  title Starter Template - Materialize
-  // CSS
-  link(href='https://fonts.googleapis.com/icon?family=Material+Icons' rel='stylesheet')
-  link(href='css/materialize.css' type='text/css' rel='stylesheet' media='screen,projection')
-  link(href='css/style.css' type='text/css' rel='stylesheet' media='screen,projection')
-body
-nav(class="white" role="navigation")
-            div(class="nav-wrapper container")
-            
-#login-page.row
-  .col.s12.z-depth-6.card-panel
-    form.login-form
-     div(class="container")
-      div(class="row center")
-        .input-field.col.s12
-          i.material-icons.prefix mail_outline
-          input#email.validate(type='email')
-          label(for='email' data-error='wrong' data-success='right') Email
-      div(class="row center")
-        .input-field.col.s12
-          i.material-icons.prefix lock_outline
-          input#password(type='password')
-          label(for='password') Password
-      div(class="row center")
-        .input-field.col.s12.m12.l12.login-text
-          input#remember-me(type='checkbox')
-          label(for='remember-me') Remember me
-      div(class="row center")
-        .input-field.col.s12
-          a.btn.waves-effect.waves-light.col.s12(href='#') Login
-      div(class="row center")
-        .input-field.col.s6.m6.l6
-          p.margin.medium-small
-            a(href='#') Register Now!
-        .input-field.col.s6.m6.l6
-          p.margin.right-align.medium-small
-            a(href='#') Forgot password?
-script(src='https://code.jquery.com/jquery-2.1.1.min.js')
-script(src='js/materialize.js')
-script(src='js/init.js')
+              }
+              .container{
+                      margin:100px auto;
+                      width: 35%;
+
+              }
+              @media(max-width: 952px){
+                      .container{
+                              width: 60%;
+                      }
+              }
+                      @media(max-width: 475px){
+                      .container{
+                              width: 80%;
+                      }
+              }
+    script.
+      $(document).ready(function(){
+        $("#login-submit").submit(function(event){ 
+            event.preventDefault(); 
+            var payload = {}; 
+            payload.emailId = $('#email-input').val(); 
+            payload.password = $('#password-input').val();
+            $.ajax({
+                url : 'http://localhost:3000/login', 
+                type: 'POST', 
+                contentType: 'application/json', 
+                dataType: 'json', 
+                data : JSON.stringify(payload)
+            });
+        });
+      });
+
+  body
+    .container
+      .row.card.hoverable
+        .card-content
+          h4.center.blue-text Welcome to YHAA
+          form#login-submit.row.s12
+            .col.s12
+              .input-field
+                input#email-input(type='text', name, placeholder='Email address*')
+            .col.s12
+              .input-field
+                input#password-input(type='password', name, placeholder='Password*')
+            .col.s12
+              p
+                label
+                  input(type='checkbox')
+            .col.s12.center
+              button.btn.btn-large.waves-effect.waves-light.blue(type='submit', name='action')
+                | Login
+                i.material-icons.right send

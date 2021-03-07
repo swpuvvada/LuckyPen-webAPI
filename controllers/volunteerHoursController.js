@@ -11,7 +11,8 @@ const addVolunteerHour = async (req, res, next) => {
     try {
         const data = req.body;
         data.isAccepted = null;
-        await firestore.collection('volunteerHours').doc().set(data);
+        console.log(data);
+        // await firestore.collection('volunteerHours').doc().set(data);
         res.send('Request saved successfully');
     } catch(error) {
         res.status(400).send(error.message);
@@ -61,14 +62,30 @@ const getHoursRecordbyEmailInternal = async (emailId) => {
 // Accept/Deny volunteer hour request (used by Admin)
 const updateHoursRecord = async (req, res, next) => {
     try{
-        const id = req.params.id;
-        const hour = await firestore.collection('volunteerHours').doc(id);
-        const data = req.body;
-        await hour.update(data);
+        let adminEmail = req.body.adminEmail;
+        let reviewedHours = req.body.reviewedHours;
+        for (let idx in reviewedHours) {
+            let data = reviewedHours[idx];
+            let documentId = data.id;
+            data.reviewedBy = adminEmail;
+            data.dateReviewed = getCurrentDate();
+            console.log(data);
+            // const hour = await firestore.collection('volunteerHours').doc(documentId);
+            // await hour.update(data);
+        }
         res.send('Volunteer Hour record updated successfuly');
     }catch (error){
         res.status(400).send(error.message);
     }
+}
+
+const getCurrentDate = () =>{
+    let date_ob = new Date();
+    let date = ("0" + date_ob.getDate()).slice(-2);
+    let month = ("0" + (date_ob.getMonth() + 1)).slice(-2);
+    let year = date_ob.getFullYear();
+    var currentDate = year + '-' + month + '-' + date;
+    return currentDate;
 }
 
 // get Volunteer hours that need to reviewed (used by Admin)

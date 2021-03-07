@@ -2,9 +2,42 @@ doctype html
 html 
     head
         title Welcome to YHAA
-        link(href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet")
-        link(href="css/materialize.css" type="text/css" rel="stylesheet" media="screen,projection")
-        link(href="css/style.css" type="text/css" rel="stylesheet" media="screen,projection")
+        link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+        link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css')
+        script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.1.min.js')
+        script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js')
+        script.
+            var reviews = {};
+            $(document).ready(function() {    
+                $('select').formSelect();
+
+                $(".approve-deny").change(function(event) {
+                    event.preventDefault();
+                    let tbl_row = $(this).closest('tr');
+                    let row_id = tbl_row.attr('row_id');
+                    let value = $(this).find('.approve-deny-select').val();
+                    reviews[row_id] = value;
+                });
+
+                $("#update-hours").submit(function(event){ 
+                    event.preventDefault();
+                    let reviewedHours = [];
+                    for (let o in reviews) {
+                        reviewedHours.push({'id': o, 'isReviewed': reviews[o]});
+                    }
+                    let payload = {};
+                    payload.adminEmail = '#{Email}';
+                    payload.reviewedHours = reviewedHours;
+                    
+                    $.ajax({
+                        url : 'http://localhost:3000/api/request', 
+                        type: 'PUT', 
+                        contentType: 'application/json', 
+                        dataType: 'json', 
+                        data : JSON.stringify(payload)
+                    });
+                });
+            });
     body
         nav(class="light-blue lighten-1" role="navigation")
             div(class="nav-wrapper container")
@@ -23,22 +56,28 @@ html
                         div(class="card-panel light-grey")
                             h3(class="header blue-text") Volunteer Hours Requests
                             div(class="row center")
-                                table
-                                    thead 
-                                        tr
-                                            th Email ID
-                                            th Date Requested
-                                            th Hours Requested
-                                            th Accept/Deny
-                                    tbody 
-                                        each request in requestPending
-                                            tr 
-                                                td= request.emailId
-                                                td= request.dateRequested 
-                                                td= request.hoursRequested
-                                                td
-                                                    label
-                                                        input(type="checkbox" class="filled-in" checked="checked")
+                                form#update-hours
+                                    table#centered
+                                        thead 
+                                            tr
+                                                th Email ID
+                                                th Date Requested
+                                                th Hours Requested
+                                                th Accept/Deny
+                                        tbody 
+                                            each request in requestPending
+                                                tr("row_id"=request.id)
+                                                    td= request.emailId
+                                                    td= request.dateRequested 
+                                                    td= request.hoursRequested
+                                                    td.approve-deny
+                                                        select.approve-deny-select
+                                                            option(value, disabled, selected) Review
+                                                            option(value='A') Accept 
+                                                            option(value='D') Deny
+                                    .row
+                                        .input-field
+                                            button.btn-large.waves-effect.waves-light.blue(type='submit', name='action') Submit
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")
@@ -81,8 +120,3 @@ html
                                             td= member.name 
                                             td= member.email 
                                             td= member.totalHours
-
-        script(src="https://code.jquery.com/jquery-2.1.1.min.js")
-        script(src="js/materialize.js")
-        script(src="js/init.js")
-

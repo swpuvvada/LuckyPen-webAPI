@@ -3,6 +3,7 @@
 const firebase = require('../db');
 const Member = require('../models/member');
 const Volunteer = require('../models/volunteer')
+const {getHoursRecordbyEmailInternal, getHoursToBeReveiwedInternal, getHoursReveiwedInternal, getHoursToBeReviewed} = require('./volunteerHoursController');
 const firestore = firebase.firestore();
 
 const addMember = async(req, res, next) => {
@@ -76,11 +77,13 @@ const updateMember = async (req, res, next) => {
 
 const getMemberByEmail = async (req, res, next) => {
     let members = [];
-    const emailId = req.params.emailId;
+    let emailId = req.params.emailId;
     await firestore.collection('members').where('email', '==', emailId)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
+                let storedPassword = doc.password;
+                
                 members.push(doc.data());
             });
             res.send(members[0]);
@@ -88,6 +91,31 @@ const getMemberByEmail = async (req, res, next) => {
         .catch((error) => {
             res.status(400).send(error.message);
         });
+}
+
+const getMemberByEmailInternal = async(emailId) => {
+    let member = null;
+    await firestore.collection('members').where('email', '==', emailId)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
+                let data = doc.data();
+                member = new Member(
+                    doc.id,
+                    data.firstName,
+                    data.lastName,
+                    data.email,
+                    data.password,
+                    data.totalHours
+                );
+                return;
+            });
+        })
+        .catch((error) => {
+            console.log(error.message);
+            member = null;
+        });
+    return member;
 }
 
 
@@ -99,5 +127,6 @@ module.exports = {
     updateMember,
     getMemberByEmail,
     getAllMembers,
-    getAllMembersInternal
+    getAllMembersInternal,
+    getMemberByEmailInternal
 }

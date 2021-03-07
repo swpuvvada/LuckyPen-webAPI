@@ -2,7 +2,7 @@ const express = require('express');
 const {addMember, 
       getAllMembers, 
       getMember, 
-      updateMember, 
+      updateMember,
       getMemberByEmail} 
       = require('../controllers/memberController');
 

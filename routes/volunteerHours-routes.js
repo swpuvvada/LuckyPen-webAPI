@@ -10,7 +10,7 @@ const router = express.Router();
 
 router.post('/request', addVolunteerHour);
 router.get('/request/:emailId', getHoursRecordByEmail);
-router.put('/request/:id', updateHoursRecord);
+router.put('/request', updateHoursRecord);
 router.get('/unapprovedRequests', getHoursToBeReviewed);
 
 module.exports = {

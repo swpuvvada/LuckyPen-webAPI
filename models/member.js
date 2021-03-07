@@ -7,6 +7,7 @@ class Member {
         this.password = password;
         this.totalHours = totalHours;
         this.name = this.firstName + ' ' + this.lastName;
+        this.isAdmin = (this.email == "swpuvvada@gmail.com") ? true : false;
     }
 }
 
