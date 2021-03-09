@@ -9,7 +9,7 @@ html
         script.
             $(document).ready(function() {    
                 $('select').formSelect();
-                $('.datepicker').datepicker({"format": "yyyy-mm-dd", "autoClose": true});
+                $('.datepicker').datepicker({"format": "yyyy-mm-dd", "autoClose": true, "setDefaultDate": true});
         
                 $("#update-hours").submit(function(event){ 
                     event.preventDefault(); 
@@ -17,12 +17,16 @@ html
                     payload.dateRequested = $('#volunteer-date').val(); 
                     payload.hoursRequested = parseInt($('#volunteer-hours').val());
                     payload.emailId = "#{Email}";
+                    payload.memberId = "#{memberId}";
                     $.ajax({
                         url : 'http://localhost:3000/api/request', 
                         type: 'POST', 
                         contentType: 'application/json', 
                         dataType: 'json', 
-                        data : JSON.stringify(payload)
+                        data : JSON.stringify(payload),
+                        success: function(response) {
+                            window.location = window.location;
+                        }
                     });
                 });
             });
@@ -53,7 +57,7 @@ html
                                     form#update-hours
                                         .row
                                         .input-field.col.s2.offset-s4
-                                            input.datepicker(type='text', name="date", id="volunteer-date")
+                                            input.datepicker(type='text', name="date", id="volunteer-date", placeholder="Select Date")
 
                                         .input-field.col.s2
                                             select(name="hours", id="volunteer-hours")
@@ -86,5 +90,5 @@ html
                                     each request in requestHistory 
                                         tr
                                             td= request.dateRequested 
-                                            td= request.status
+                                            td= request.isAccepted
                                             td= request.hoursRequested

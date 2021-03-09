@@ -11,10 +11,33 @@ const addVolunteerHour = async (req, res, next) => {
     try {
         const data = req.body;
         data.isAccepted = null;
-        console.log(data);
-        // await firestore.collection('volunteerHours').doc().set(data);
-        res.send('Request saved successfully');
+        await firestore.collection('volunteerHours').doc().set(data);
+        res.status(200).send({message: 'Request saved successfully'});
     } catch(error) {
+        res.status(400).send({error: error.message});
+    }
+}
+
+const getHours = async(req, res, next) => {
+    let hours = [];
+    try {
+        const data = await firestore.collection('volunteerHours').get();
+        if (!data.empty) {
+            data.forEach(doc => {
+                const hour = new Volunteer(
+                    doc.id,
+                    doc.data().emailId,
+                    doc.data().dateRequested,
+                    doc.data().dateReviewed,
+                    doc.data().hoursRequested,
+                    doc.data().isAccepted,
+                    doc.data().reviewedBy
+                );
+                hours.push(hour);
+            })
+        }
+        res.send(hours);
+    } catch (error) {
         res.status(400).send(error.message);
     }
 }
@@ -69,13 +92,11 @@ const updateHoursRecord = async (req, res, next) => {
             let documentId = data.id;
             data.reviewedBy = adminEmail;
             data.dateReviewed = getCurrentDate();
-            console.log(data);
-            // const hour = await firestore.collection('volunteerHours').doc(documentId);
-            // await hour.update(data);
+            await firestore.collection('volunteerHours').doc(documentId).update(data);
         }
-        res.send('Volunteer Hour record updated successfuly');
+        res.status(200).send({message: 'Volunteer Hour record updated successfuly'});
     }catch (error){
-        res.status(400).send(error.message);
+        res.status(400).send({error: error.message});
     }
 }
 
@@ -109,7 +130,9 @@ const getHoursToBeReveiwedInternal = async () => {
                         doc.id,
                         doc.data().emailId,
                         doc.data().dateRequested,
-                        doc.data().hoursRequested
+                        doc.data().hoursRequested,
+                        doc.data().isAccepted,
+                        doc.data().reviewedBy
                     );
                     hours.push(hour);
                 });
@@ -134,7 +157,9 @@ const getHoursReveiwedInternal = async () => {
                         doc.id,
                         doc.data().emailId,
                         doc.data().dateRequested,
-                        doc.data().hoursRequested
+                        doc.data().hoursRequested,
+                        doc.data().isAccepted,
+                        doc.data().reviewedBy
                     );
                     hours.push(hour);
                 });
@@ -155,5 +180,6 @@ module.exports = {
     getHoursToBeReviewed,
     getHoursRecordbyEmailInternal,
     getHoursToBeReveiwedInternal,
-    getHoursReveiwedInternal 
+    getHoursReveiwedInternal,
+    getHours
 }

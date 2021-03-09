@@ -2,8 +2,6 @@
 
 const firebase = require('../db');
 const Member = require('../models/member');
-const Volunteer = require('../models/volunteer')
-const {getHoursRecordbyEmailInternal, getHoursToBeReveiwedInternal, getHoursReveiwedInternal, getHoursToBeReviewed} = require('./volunteerHoursController');
 const firestore = firebase.firestore();
 
 const addMember = async(req, res, next) => {
@@ -19,17 +17,41 @@ const addMember = async(req, res, next) => {
 const getMember = async (req, res, next) => {
     try{
         const id = req.params.id;
-        const member = await firestore.collection('members').doc(id);
-        const data = await member.get();
-        if(!data.exists){
+        let member = await getMemberInternal(id);
+
+        if(member == null){
             res.status(404).send('Member with the given ID not found')
         }else{
-            res.send(data.data());
+            res.send(member);
         }
     }catch (error){
         res.status(400).send(error.message);
     }
 }
+
+const getMemberInternal = async (id) => {
+    try{
+        const member = await firestore.collection('members').doc(id);
+        const doc = await member.get();
+        if(!doc.exists){
+            return null;
+        }else{
+            let data = doc.data();
+            return new Member(
+                doc.id,
+                data.firstName,
+                data.lastName,
+                data.email,
+                data.password,
+                data.totalHours,
+                data.isAdmin
+            );
+        }
+    }catch (error){
+        res.status(400).send(error.message);
+    }
+}
+
 const getAllMembers = async (req, res, next) => {
     try{
         let memberArray = await getAllMembersInternal();
@@ -41,20 +63,22 @@ const getAllMembers = async (req, res, next) => {
 
 const getAllMembersInternal = async () => {
     try{
-        const member = await firestore.collection('members');
-        const data = await member.get()
+        const data = await firestore.collection('members').get();
         const memberArray = [];
         if(!data.empty){
             data.forEach(doc => {
-                    const member = new Member(
-                        doc.id,
-                        doc.data().firstName,
-                        doc.data().lastName,
-                        doc.data().email,
-                        null,
-                        doc.data().totalHours
-                    );
-                    memberArray.push(member);
+                    if (doc.data().isAdmin != true) {
+                        const member = new Member(
+                            doc.id,
+                            doc.data().firstName,
+                            doc.data().lastName,
+                            doc.data().email,
+                            null,
+                            doc.data().totalHours,
+                            doc.data().isAdmin
+                        );
+                        memberArray.push(member);
+                    }
             });
         }
         return (memberArray);
@@ -106,7 +130,8 @@ const getMemberByEmailInternal = async(emailId) => {
                     data.lastName,
                     data.email,
                     data.password,
-                    data.totalHours
+                    data.totalHours,
+                    data.isAdmin
                 );
                 return;
             });
@@ -128,5 +153,6 @@ module.exports = {
     getMemberByEmail,
     getAllMembers,
     getAllMembersInternal,
-    getMemberByEmailInternal
+    getMemberByEmailInternal,
+    getMemberInternal
 }

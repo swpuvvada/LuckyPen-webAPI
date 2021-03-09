@@ -1,5 +1,5 @@
 class Member {
-    constructor(id, firstName, lastName, email, password, totalHours) {
+    constructor(id, firstName, lastName, email, password, totalHours, isAdmin) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -7,7 +7,7 @@ class Member {
         this.password = password;
         this.totalHours = totalHours;
         this.name = this.firstName + ' ' + this.lastName;
-        this.isAdmin = (this.email == "swpuvvada@gmail.com") ? true : false;
+        this.isAdmin = isAdmin;
     }
 }
 
