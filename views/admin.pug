@@ -23,7 +23,7 @@ html
                     event.preventDefault();
                     let reviewedHours = [];
                     for (let o in reviews) {
-                        reviewedHours.push({'id': o, 'isReviewed': reviews[o]});
+                        reviewedHours.push({'id': o, 'isAccepted': reviews[o]});
                     }
                     let payload = {};
                     payload.adminEmail = '#{Email}';
@@ -34,7 +34,10 @@ html
                         type: 'PUT', 
                         contentType: 'application/json', 
                         dataType: 'json', 
-                        data : JSON.stringify(payload)
+                        data : JSON.stringify(payload),
+                        success: function(response) {
+                            window.location = window.location;
+                        }
                     });
                 });
             });
@@ -100,7 +103,7 @@ html
                                             td= request.dateRequested
                                             td= request.hoursRequested 
                                             td= request.isAccepted
-                                            td= request.reveiwedBy
+                                            td= request.reviewedBy
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")

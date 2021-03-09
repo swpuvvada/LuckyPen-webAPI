@@ -7,8 +7,8 @@ const {getAdminPage,
 
 const router = express.Router();
 
-router.get('/member', getMemberPage);
-router.get('/admin', getAdminPage);
+router.get('/member/:id', getMemberPage);
+router.get('/admin/:id', getAdminPage);
 router.get('/', getSignInPage);
 router.post('/login', loginUser);
 
