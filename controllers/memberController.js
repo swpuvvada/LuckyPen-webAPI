@@ -7,10 +7,10 @@ const firestore = firebase.firestore();
 const addMember = async(req, res, next) => {
     try {
         const data = req.body;
-        await firestore.collection('members').doc().set(data);
-        res.send('Record saved successfully');
+        const doc = await firestore.collection('members').add(data);
+        res.send({url: '/member/' + doc.id});
     } catch(error) {
-        res.status(400).send(error.message);
+        res.status(400).send({error: error.message});
     }
 }
 
@@ -99,6 +99,33 @@ const updateMember = async (req, res, next) => {
     }
 }
 
+const updateMemberData= async(emailTotalHourData) => {
+    try {
+        for (let emailId in emailTotalHourData) {
+            await firestore.collection('members').where('email', '==', emailId)
+            .get()
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    let docId = doc.id;
+                    let totalHours = doc.data().totalHours;
+                    totalHours = (totalHours == undefined) ? emailTotalHourData[emailId] : totalHours + emailTotalHourData[emailId];
+                    let dataToUpdate = {'totalHours': totalHours};
+                    updateTotalHour(docId, dataToUpdate);
+                })
+            })
+            .catch((error) => {
+                console.log(error.massage);
+            });
+        }
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const updateTotalHour = async (id, data) => {
+    await firestore.collection('members').doc(id).update(data);
+}
+
 const getMemberByEmail = async (req, res, next) => {
     let members = [];
     let emailId = req.params.emailId;
@@ -143,9 +170,6 @@ const getMemberByEmailInternal = async(emailId) => {
     return member;
 }
 
-
-
-
 module.exports = {
     addMember,
     getMember,
@@ -154,5 +178,6 @@ module.exports = {
     getAllMembers,
     getAllMembersInternal,
     getMemberByEmailInternal,
-    getMemberInternal
+    getMemberInternal,
+    updateMemberData
 }
