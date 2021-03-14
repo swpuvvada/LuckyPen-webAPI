@@ -4,6 +4,7 @@ const firebase = require('../db');
 const Member = require('../models/member');
 const Volunteer = require('../models/volunteer');
 const VolunteerRequest = require('../models/volunteerRequest');
+const { updateMemberData } = require('./memberController');
 const firestore = firebase.firestore();
 
 // to send volunteer hour request (for members)
@@ -85,6 +86,7 @@ const getHoursRecordbyEmailInternal = async (emailId) => {
 // Accept/Deny volunteer hour request (used by Admin)
 const updateHoursRecord = async (req, res, next) => {
     try{
+        let totalHoursToUpdate = {};
         let adminEmail = req.body.adminEmail;
         let reviewedHours = req.body.reviewedHours;
         for (let idx in reviewedHours) {
@@ -92,8 +94,18 @@ const updateHoursRecord = async (req, res, next) => {
             let documentId = data.id;
             data.reviewedBy = adminEmail;
             data.dateReviewed = getCurrentDate();
+            if (data.isAccepted == 'A') {
+                let emailId = data.emailId;
+                if (emailId in totalHoursToUpdate) {
+                    totalHoursToUpdate[emailId] += parseInt(data.hoursRequested)
+                } else {
+                    totalHoursToUpdate[emailId] = parseInt(data.hoursRequested);
+                }
+            }
             await firestore.collection('volunteerHours').doc(documentId).update(data);
         }
+
+        await updateMemberData(totalHoursToUpdate);
         res.status(200).send({message: 'Volunteer Hour record updated successfuly'});
     }catch (error){
         res.status(400).send({error: error.message});
@@ -118,7 +130,7 @@ const getHoursToBeReviewed = async (req, res, next) => {
         res.status(400).send(error.message);
     }
 }
-
+//gets all volunteer hour requests that aren't reveiwed yet to the Admin page to be approved
 const getHoursToBeReveiwedInternal = async () => {
     let hours = [];
     try{
@@ -145,7 +157,7 @@ const getHoursToBeReveiwedInternal = async () => {
     }
     return hours;
 }
-
+//gets all reveiwed hours request information for table on Admin page
 const getHoursReveiwedInternal = async () => {
     let hours = [];
     try{

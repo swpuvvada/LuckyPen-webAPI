@@ -7,7 +7,7 @@ html
         script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.1.min.js')
         script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js')
         script.
-            var reviews = {};
+            var reviews = [];
             $(document).ready(function() {    
                 $('select').formSelect();
 
@@ -15,19 +15,17 @@ html
                     event.preventDefault();
                     let tbl_row = $(this).closest('tr');
                     let row_id = tbl_row.attr('row_id');
+                    let email_id = tbl_row.attr('email_id');
+                    let hours_requested = tbl_row.attr('hours_requested');
                     let value = $(this).find('.approve-deny-select').val();
-                    reviews[row_id] = value;
+                    reviews.push({'id': row_id, 'emailId': email_id, 'isAccepted': value, 'hoursRequested':hours_requested});
                 });
 
                 $("#update-hours").submit(function(event){ 
                     event.preventDefault();
-                    let reviewedHours = [];
-                    for (let o in reviews) {
-                        reviewedHours.push({'id': o, 'isAccepted': reviews[o]});
-                    }
                     let payload = {};
                     payload.adminEmail = '#{Email}';
-                    payload.reviewedHours = reviewedHours;
+                    payload.reviewedHours = reviews;
                     
                     $.ajax({
                         url : 'http://localhost:3000/api/request', 
@@ -47,7 +45,7 @@ html
                 a(id="logo-container" href="#" class="brand-logo") YHAA
                 ul(class="right hide-on-med-and-down")
                     li 
-                        a(href="#") Sign-out
+                        a(href="#")
         
         div(class="section no-pad-bot" id="index-banner")
             div(class="container")
@@ -69,7 +67,7 @@ html
                                                 th Accept/Deny
                                         tbody 
                                             each request in requestPending
-                                                tr("row_id"=request.id)
+                                                tr("row_id"=request.id, "email_id"=request.emailId, "hours_requested"=request.hoursRequested)
                                                     td= request.emailId
                                                     td= request.dateRequested 
                                                     td= request.hoursRequested

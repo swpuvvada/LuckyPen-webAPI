@@ -55,6 +55,14 @@ const getSignInPage = async(req, res, next) => {
     }
 }
 
+const getRegisterPage = async(req, res, next) => {
+    try {
+        res.render('register');
+    } catch(error) {
+        res.status(404).send(error.message);
+    }
+}
+
 const loginUser = async (req, res, next) => {
     try {
         let body = req.body;
@@ -91,5 +99,6 @@ module.exports = {
     getMemberPage,
     getAdminPage,
     getSignInPage,
-    loginUser
+    loginUser,
+    getRegisterPage
 }

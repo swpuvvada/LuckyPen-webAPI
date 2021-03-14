@@ -1,0 +1,113 @@
+html 
+  head 
+    title Welcome to YHAA
+    meta(charset='utf-8')
+    meta(name='viewport', content='width=device-width,initial-scale=1')
+    link(rel='stylesheet', href='https://fonts.googleapis.com/icon?family=Material+Icons')
+    link(rel='stylesheet', href='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css')
+    script(type='text/javascript', src='https://code.jquery.com/jquery-2.1.1.min.js')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js')
+    
+    style(type='text/css').
+        body {
+            background: #222;
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-position: center center;
+            background-fill-mode: rgba(0,0,0,0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            }
+            .container {
+            background: white;
+            padding: 20px 25px;
+            border: 5px solid #26a69a;
+            width: 550px;
+            height: auto;
+            box-sizing: border-box;
+            position: relative;
+            }
+            .col.s6 > .btn {
+            width: 100%;
+            }
+            .gender-male,.gender-female {
+            display: inline-block;
+            }
+            .gender-female {
+            margin-left: 35px;
+            }
+            radio:required {
+            border-color: red;
+            }
+            .container {
+            animation: showUp 0.5s cubic-bezier(0.18, 1.3, 1, 1) forwards;
+            }
+
+            @keyframes showUp {
+            0% {
+                transform: scale(0);
+            }
+            100% {
+                transoform: scale(1);
+            }
+            }
+            .row {margin-bottom: 10px;}
+
+            .ngl {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            }
+        }
+
+    script.
+        $(document).ready(function() {    
+            $('select').formSelect();
+
+            $("#reg-form").submit(function(event){ 
+              event.preventDefault(); 
+              var payload = {}; 
+              payload.firstName = $('#first_name').val(); 
+              payload.lastName = $('#last_name').val();
+              payload.email = $('#email').val();
+              payload.password = $('#password').val();
+              payload.totalHours = 0;
+              $.ajax({
+                  url : 'http://localhost:3000/api/member', 
+                  type: 'POST', 
+                  contentType: 'application/json', 
+                  dataType: 'json', 
+                  data : JSON.stringify(payload),
+                  success: function(response) {
+                          window.location = response.url;
+                        }
+              });
+            });
+        });
+
+  body
+    .container
+      .row
+        form#reg-form.col.s12
+          .row
+            .input-field.col.s6
+              input.validate(id='first_name' type='text' required)
+              label(for='first_name') First Name
+            .input-field.col.s6
+              input.validate(id='last_name' type='text' required)
+              label(for='last_name') Last Name
+          .row
+            .input-field.col.s12
+              input#email.validate(type='email' required)
+              label(for='email') Email
+          .row
+            .input-field.col.s12
+              input#password.validate(type='password' minlength='6' required)
+              label(for='password') Password
+          .row.center
+            .input-field.col.s12
+              button.btn.btn-large.btn-register.waves-effect.waves-light(type='submit' name='action')
+                | Register
+                i.material-icons.right done
