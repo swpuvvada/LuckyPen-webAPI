@@ -3,7 +3,7 @@
 const firebase = require('../db');
 const Member = require('../models/member');
 const Volunteer = require('../models/volunteer');
-const VolunteerRequest = require('../models/volunteerRequest');
+const VolunteerRequest = require('../models/sessionRequest');
 const { updateMemberData } = require('./memberController');
 const firestore = firebase.firestore();
 
