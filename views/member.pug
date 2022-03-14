@@ -32,54 +32,27 @@ html
             });
 
     body
-        nav(class="light-blue lighten-1" role="navigation")
+        nav(class="light-green lighten-1" role="navigation")
             div(class="nav-wrapper container")
-                a(id="logo-container" href="#" class="brand-logo") YHAA
+                a(id="logo-container" href="#" class="brand-logo") LuckyPen
                 ul(class="right hide-on-med-and-down")
                     li 
                         a(href="#")
         
         div(class="section no-pad-bot" id="index-banner")
             div(class="container")
-                h3(class="header blue-text") #{FullName}
+                h3(class="header green-text") #{FullName}
                     h6(class="header col s11 light") #{Email} 
                     h6(class="header col s11 light") #{TotalHours}
-                div(class="row center")
-                    div(class="col s12 m15")
-                        div(class="card-panel light-grey")
-                            h3(class="header blue-text") Hours Request Form
-                            div(class="row center")
-                                h5(class="header col s11 light") Input # of Volunteer Hours
-                                h6(class="header col s11 light") (can only send one request for a day)</h5>
-                                .row.center
-                                .row.center
-                                    form#update-hours
-                                        .row
-                                        .input-field.col.s2.offset-s4
-                                            input.datepicker(type='text', name="date", id="volunteer-date", placeholder="Select Date")
-
-                                        .input-field.col.s2
-                                            select(name="hours", id="volunteer-hours")
-                                                option(value, disabled, selected) Choose Hours
-                                                option(value=1) 1
-                                                option(value=2) 2
-                                                option(value=3) 3
-                                                option(value=4) 4
-                                                option(value=5) 5
-                                                option(value=6) 6
-                                                option(value=7) 7
-                                                option(value=8) 8
-                                        .row
-                                        .input-field
-                                            button.btn-large.waves-effect.waves-light.blue(type='submit', name='action') Send Request
+        
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")
                 div(class="row center")
                     div(class="col s12 m15")
                         div(class="card-panel light-grey")
-                            h3(class="header blue-text") Request History
-                            div(class="row center") 
+                            h3(class="header green-text") Payment History
+                            div(class="row center")
                             table 
                                 tr
                                     th Date Sent
