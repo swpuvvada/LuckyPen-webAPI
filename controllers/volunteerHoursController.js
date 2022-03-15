@@ -3,7 +3,7 @@
 const firebase = require('../db');
 const Member = require('../models/member');
 const Volunteer = require('../models/volunteer');
-const VolunteerRequest = require('../models/sessionRequest');
+const SessionRequest = require('../models/sessionRequest');//changed from volunteerRequest
 const { updateMemberData } = require('./memberController');
 const firestore = firebase.firestore();
 
@@ -11,7 +11,7 @@ const firestore = firebase.firestore();
 const addVolunteerHour = async (req, res, next) => {
     try {
         const data = req.body;
-        data.isAccepted = null;
+        data.isPaid = null;
         await firestore.collection('volunteerHours').doc().set(data);
         res.status(200).send({message: 'Request saved successfully'});
     } catch(error) {
@@ -31,7 +31,7 @@ const getHours = async(req, res, next) => {
                     doc.data().dateRequested,
                     doc.data().dateReviewed,
                     doc.data().hoursRequested,
-                    doc.data().isAccepted,
+                    doc.data().isPaid,
                     doc.data().reviewedBy
                 );
                 hours.push(hour);
@@ -67,7 +67,7 @@ const getHoursRecordbyEmailInternal = async (emailId) => {
                         doc.data().dateRequested,
                         doc.data().dateReviewed,
                         doc.data().hoursRequested,
-                        doc.data().isAccepted,
+                        doc.data().isPaid,
                         doc.data().reviewedBy
                     );
                     hours.push(hour);
@@ -94,7 +94,7 @@ const updateHoursRecord = async (req, res, next) => {
             let documentId = data.id;
             data.reviewedBy = adminEmail;
             data.dateReviewed = getCurrentDate();
-            if (data.isAccepted == 'A') {
+            if (data.isPaid == 'P') {
                 let emailId = data.emailId;
                 if (emailId in totalHoursToUpdate) {
                     totalHoursToUpdate[emailId] += parseInt(data.hoursRequested)
@@ -124,8 +124,8 @@ const getCurrentDate = () =>{
 // get Volunteer hours that need to reviewed (used by Admin)
 const getHoursToBeReviewed = async (req, res, next) => {
     try{
-        let volunteerRequestArray = await getHoursToBeReveiwedInternal();
-        res.send(volunteerRequestArray);
+        let volunteerRequestArray = await getHoursToBeReveiwedInternal(); //sessionrequest
+        res.send(volunteerRequestArray); //sessionrequest
     }catch (error) {
         res.status(400).send(error.message);
     }
@@ -134,17 +134,17 @@ const getHoursToBeReviewed = async (req, res, next) => {
 const getHoursToBeReveiwedInternal = async () => {
     let hours = [];
     try{
-        await firestore.collection('volunteerHours').where("isAccepted", '==', null)
+        await firestore.collection('volunteerHours').where("isPaid", '==', null)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    const hour = new VolunteerRequest(
+                    const hour = new SessionRequest( //changed from volunteer request
                         doc.id,
                         doc.data().emailId,
                         doc.data().dateRequested,
-                        doc.data().hoursRequested,
-                        doc.data().isAccepted,
-                        doc.data().reviewedBy
+                        doc.data().timeRequested,
+                        doc.data().cost,
+                        doc.data().isPaid
                     );
                     hours.push(hour);
                 });
@@ -161,17 +161,17 @@ const getHoursToBeReveiwedInternal = async () => {
 const getHoursReveiwedInternal = async () => {
     let hours = [];
     try{
-        await firestore.collection('volunteerHours').where("isAccepted", '!=', null)
+        await firestore.collection('volunteerHours').where("isPaid", '!=', null)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
-                    const hour = new VolunteerRequest(
+                    const hour = new SessionRequest( //changed from volunteer request
                         doc.id,
                         doc.data().emailId,
                         doc.data().dateRequested,
-                        doc.data().hoursRequested,
-                        doc.data().isAccepted,
-                        doc.data().reviewedBy
+                        doc.data().timeRequested,
+                        doc.data().cost,
+                        doc.data().isPaid
                     );
                     hours.push(hour);
                 });

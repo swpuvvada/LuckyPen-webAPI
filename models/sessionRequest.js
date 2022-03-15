@@ -1,12 +1,12 @@
-class VolunteerRequest{
-    constructor(id, emailId, dateRequested, hoursRequested, isAccepted, reviewedBy) {
+class SessionRequest{
+    constructor(id, emailId, dateRequested, timeRequested, cost, isPaid) {
         this.id = id;
         this.emailId = emailId;
         this.dateRequested = dateRequested;
-        this.hoursRequested = hoursRequested;
-        this.isAccepted = isAccepted;
-        this.reviewedBy = reviewedBy;
+        this.timeRequested = timeRequested;
+        this.cost = cost;
+        this.isPaid = isPaid;
     }
 }
 
-module.exports = VolunteerRequest;
+module.exports = SessionRequest;
