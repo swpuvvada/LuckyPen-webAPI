@@ -1,43 +1,43 @@
 'use strict';
 
 const firebase = require('../db');
-const Member = require('../models/member');
+const Student = require('../models/student');
 const firestore = firebase.firestore();
 
-const addMember = async(req, res, next) => {
+const addStudent = async(req, res, next) => {
     try {
         const data = req.body;
-        const doc = await firestore.collection('members').add(data);
-        res.send({url: '/member/' + doc.id});
+        const doc = await firestore.collection('students').add(data);
+        res.send({url: '/student/' + doc.id});
     } catch(error) {
         res.status(400).send({error: error.message});
     }
 }
 
-const getMember = async (req, res, next) => {
+const getStudent = async (req, res, next) => {
     try{
         const id = req.params.id;
-        let member = await getMemberInternal(id);
+        let student = await getStudentInternal(id);
 
-        if(member == null){
-            res.status(404).send('Member with the given ID not found')
+        if(student == null){
+            res.status(404).send('Student with the given ID not found')
         }else{
-            res.send(member);
+            res.send(student);
         }
     }catch (error){
         res.status(400).send(error.message);
     }
 }
 
-const getMemberInternal = async (id) => {
+const getStudentInternal = async (id) => {
     try{
-        const member = await firestore.collection('members').doc(id);
-        const doc = await member.get();
+        const student = await firestore.collection('students').doc(id);
+        const doc = await student.get();
         if(!doc.exists){
             return null;
         }else{
             let data = doc.data();
-            return new Member(
+            return new Student(
                 doc.id,
                 data.firstName,
                 data.lastName,
@@ -52,24 +52,24 @@ const getMemberInternal = async (id) => {
     }
 }
 
-const getAllMembers = async (req, res, next) => {
+const getAllStudents = async (req, res, next) => {
     try{
-        let memberArray = await getAllMembersInternal();
-        res.send(memberArray);
+        let studentArray = await getAllStudentsInternal();
+        res.send(studentArray);
     } catch (error) {
         res.status(400).send(error.massage);
     }
 }
 
-//gets all members' information for the table on Admin Page
-const getAllMembersInternal = async () => {
+//gets all students' information for the table on Admin Page
+const getAllStudentsInternal = async () => {
     try{
-        const data = await firestore.collection('members').get();
-        const memberArray = [];
+        const data = await firestore.collection('students').get();
+        const studentArray = [];
         if(!data.empty){
             data.forEach(doc => {
                     if (doc.data().isAdmin != true) {
-                        const member = new Member(
+                        const student = new Student(
                             doc.id,
                             doc.data().firstName,
                             doc.data().lastName,
@@ -78,32 +78,32 @@ const getAllMembersInternal = async () => {
                             doc.data().totalHours,
                             doc.data().isAdmin
                         );
-                        memberArray.push(member);
+                        studentArray.push(student);
                     }
             });
         }
-        return (memberArray);
+        return (studentArray);
     } catch (error) {
         console.log(error.massage);
     }
 }
 
-const updateMember = async (req, res, next) => {
+const updateStudent = async (req, res, next) => {
     try{
         const id = req.params.id;
-        const member = await firestore.collection('members').doc(id);
+        const student = await firestore.collection('students').doc(id);
         const data = req.body;
-        await member.update(data);
-        res.send('Member record updated successfuly');
+        await student.update(data);
+        res.send('Student record updated successfuly');
     }catch (error){
         res.status(400).send(error.message);
     }
 }
 
-const updateMemberData= async(emailTotalHourData) => {
+const updateStudentData= async(emailTotalHourData) => {
     try {
         for (let emailId in emailTotalHourData) {
-            await firestore.collection('members').where('email', '==', emailId)
+            await firestore.collection('students').where('email', '==', emailId)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
@@ -124,35 +124,35 @@ const updateMemberData= async(emailTotalHourData) => {
 }
 
 const updateTotalHour = async (id, data) => {
-    await firestore.collection('members').doc(id).update(data);
+    await firestore.collection('students').doc(id).update(data);
 }
 
-const getMemberByEmail = async (req, res, next) => {
-    let members = [];
+const getStudentByEmail = async (req, res, next) => {
+    let students = [];
     let emailId = req.params.emailId;
-    await firestore.collection('members').where('email', '==', emailId)
+    await firestore.collection('students').where('email', '==', emailId)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 let storedPassword = doc.password;
                 
-                members.push(doc.data());
+                students.push(doc.data());
             });
-            res.send(members[0]);
+            res.send(students[0]);
         })
         .catch((error) => {
             res.status(400).send(error.message);
         });
 }
 
-const getMemberByEmailInternal = async(emailId) => {
-    let member = null;
-    await firestore.collection('members').where('email', '==', emailId)
+const getStudentByEmailInternal = async(emailId) => {
+    let student = null;
+    await firestore.collection('students').where('email', '==', emailId)
         .get()
         .then((querySnapshot) => {
             querySnapshot.forEach((doc) => {
                 let data = doc.data();
-                member = new Member(
+                student = new Student(
                     doc.id,
                     data.firstName,
                     data.lastName,
@@ -166,19 +166,19 @@ const getMemberByEmailInternal = async(emailId) => {
         })
         .catch((error) => {
             console.log(error.message);
-            member = null;
+            student = null;
         });
-    return member;
+    return student;
 }
 
 module.exports = {
-    addMember,
-    getMember,
-    updateMember,
-    getMemberByEmail,
-    getAllMembers,
-    getAllMembersInternal,
-    getMemberByEmailInternal,
-    getMemberInternal,
-    updateMemberData
+    addStudent,
+    getStudent,
+    updateStudent,
+    getStudentByEmail,
+    getAllStudents,
+    getAllStudentsInternal,
+    getStudentByEmailInternal,
+    getStudentInternal,
+    updateStudentData
 }

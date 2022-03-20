@@ -10,16 +10,18 @@ html
             $(document).ready(function() {    
                 $('select').formSelect();
                 $('.datepicker').datepicker({"format": "yyyy-mm-dd", "autoClose": true, "setDefaultDate": true});
-        
+                $('.timepicker').timepicker({"autoClose": true});
+                
                 $("#update-hours").submit(function(event){ 
                     event.preventDefault(); 
                     var payload = {}; 
-                    payload.dateRequested = $('#volunteer-date').val(); 
-                    payload.hoursRequested = parseInt($('#volunteer-hours').val());
+                    payload.dateRequested = $('#session-date').val();
+                    payload.startTime = $('#session-time').val();
+                    payload.hoursRequested = parseInt($('#session-hours').val());
                     payload.emailId = "#{Email}";
-                    payload.memberId = "#{memberId}";
+                    payload.studentId = "#{studentId}";
                     $.ajax({
-                        url : 'http://localhost:3000/api/request', 
+                        url : 'http://localhost:3000/api/session', 
                         type: 'POST', 
                         contentType: 'application/json', 
                         dataType: 'json', 
@@ -47,18 +49,19 @@ html
                 div(class="row center")
                     div(class="col s12 m15")
                         div(class="card-panel light-grey")
-                            h3(class="header green-text") Payment Request Form
+                            h3(class="header green-text") Session Request Form
                             div(class="row center")
                                 h5(class="header col s11 light") Input # of Hours
                                 .row.center
                                 .row.center
                                     form#update-hours
                                         .row
-                                        .input-field.col.s2.offset-s4
-                                            input.datepicker(type='text', name="date", id="volunteer-date", placeholder="Select Date")
-
+                                        .input-field.col.s2.offset-s3
+                                            input.datepicker(type='text', name="date", id="session-date", placeholder="Select Date")
                                         .input-field.col.s2
-                                            select(name="hours", id="volunteer-hours")
+                                            input.timepicker(type='text', name="time", id="session-time", placeholder="Select Time")
+                                        .input-field.col.s2
+                                            select(name="hours", id="session-hours")
                                                 option(value, disabled, selected) Choose Hours
                                                 option(value=1) 1
                                                 option(value=2) 2
@@ -77,16 +80,39 @@ html
                 div(class="row center")
                     div(class="col s12 m15")
                         div(class="card-panel light-grey")
-                            h3(class="header green-text") Scheduled and Payment
+                            h3(class="header green-text") Scheduled
                             div(class="row center")
                             table 
                                 tr
-                                    th Date Sent
-                                    th Status  
+                                    th Date Requested
+                                    th Time Requested
+                                    th Accepted  
                                     th # of Hours
                                 tbody
-                                    each request in requestHistory 
+                                    each session in scheduledSessions 
                                         tr
-                                            td= request.dateRequested 
-                                            td= request.isAccepted
-                                            td= request.hoursRequested
+                                            td= session.dateRequested 
+                                            td= session.startTime
+                                            td= session.isAccepted
+                                            td= session.hoursRequested
+
+        div(class="section no-pad-bot" id="index-banner")    
+            div(class="container")
+                div(class="row center")
+                    div(class="col s12 m15")
+                        div(class="card-panel light-grey")
+                            h3(class="header green-text") Payment Info
+                            div(class="row center")
+                            table 
+                                tr
+                                    th Date Requested
+                                    th Time Requested
+                                    th Session Duration
+                                    th Paid/Unpaid
+                                tbody
+                                    each session in completedSessions 
+                                        tr
+                                            td= session.dateRequested 
+                                            td= session.startTime 
+                                            td= session.duration
+                                            td= session.isPaid

@@ -16,9 +16,9 @@ html
                     let tbl_row = $(this).closest('tr');
                     let row_id = tbl_row.attr('row_id');
                     let email_id = tbl_row.attr('email_id');
-                    let hours_requested = tbl_row.attr('hours_requested');
+                    let duration = $(this).find('.duration-select').val();
                     let value = $(this).find('.approve-deny-select').val();
-                    reviews.push({'id': row_id, 'emailId': email_id, 'isAccepted': value, 'hoursRequested':hours_requested});
+                    reviews.push({'id': row_id, 'emailId': email_id, 'isAccepted': value, 'duration':duration});
                 });
 
                 $("#update-hours").submit(function(event){ 
@@ -28,7 +28,7 @@ html
                     payload.reviewedHours = reviews;
                     
                     $.ajax({
-                        url : 'http://localhost:3000/api/request', 
+                        url : 'http://localhost:3000/api/session', 
                         type: 'PUT', 
                         contentType: 'application/json', 
                         dataType: 'json', 
@@ -46,39 +46,72 @@ html
                 ul(class="right hide-on-med-and-down")
                     li 
                         a(href="#")
-        
         div(class="section no-pad-bot" id="index-banner")
             div(class="container")
                 h3(class="header green-text") #{FullName}
                     h6(class="header col s11 light") #{Email} 
                     h6(class="header col s11 light") #{Title}
+                        div(class="section no-pad-bot" id="index-banner")    
+            div(class="container")
                 div(class="row center")
                     div(class="col s12 m15")
                         div(class="card-panel light-grey")
-                            h3(class="header green-text") Payment Request Form
+                            h3(class="header green-text") Active Sessions
+                            div(class="row center") 
+                            table 
+                                thead 
+                                    th Email ID
+                                    th Date Requested
+                                    th Time Requested
+                                    th Duration
+                                tbody
+                                    each request in unpaidSessions
+                                        tr
+                                            td= request.emailId 
+                                            td= request.dateRequested
+                                            td= request.startTime
+                                            td= request.duration
+                div(class="row center")
+                    div(class="col s12 m15")
+                        div(class="card-panel light-grey")
+                            h3(class="header green-text") Session Approval
                             div(class="row center")
-                                h5(class="header col s11 light") Input # of Hours
-                                .row.center
-                                .row.center
-                                    form#update-hours
-                                        .row
-                                        .input-field.col.s2.offset-s4
-                                            input.datepicker(type='text', name="date", id="volunteer-date", placeholder="Select Date")
-
-                                        .input-field.col.s2
-                                            select(name="hours", id="volunteer-hours")
-                                                option(value, disabled, selected) Choose Hours
-                                                option(value=1) 1
-                                                option(value=2) 2
-                                                option(value=3) 3
-                                                option(value=4) 4
-                                                option(value=5) 5
-                                                option(value=6) 6
-                                                option(value=7) 7
-                                                option(value=8) 8
-                                        .row
+                                form#update-hours
+                                    table#centered
+                                        thead 
+                                            tr
+                                                th Email ID
+                                                th Date Requested
+                                                th Time Requested
+                                                th Hours Requested
+                                                th Edit Hours
+                                                th Accept/Deny
+                                        tbody 
+                                            each request in unApprovedSessions
+                                                tr("row_id"=request.id, "email_id"=request.emailId, "date_requested"=request.dateRequested, "start_timee"=request.startTime, "hours_requested"=request.hoursRequested, "duration"=request.duration)
+                                                    td= request.emailId
+                                                    td= request.dateRequested 
+                                                    td= request.startTime
+                                                    td= request.hoursRequested
+                                                    td= request.duration
+                                                        select(name="hours", id="duration-select")
+                                                                option(value, disabled, selected) Choose Hours
+                                                                option(value=1) 1
+                                                                option(value=2) 2
+                                                                option(value=3) 3
+                                                                option(value=4) 4
+                                                                option(value=5) 5
+                                                                option(value=6) 6
+                                                                option(value=7) 7
+                                                                option(value=8) 8
+                                                    td.approve-deny
+                                                        select.approve-deny-select
+                                                            option(value, disabled, selected) Review
+                                                            option(value='A') Accept 
+                                                            option(value='D') Deny
+                                    .row
                                         .input-field
-                                            button.btn-large.waves-effect.waves-light.green(type='submit', name='action') Send Request
+                                            button.btn-large.waves-effect.waves-light.green(type='submit', name='action') Submit
                 div(class="row center")
                     div(class="col s12 m15")
                         div(class="card-panel light-grey")
@@ -90,45 +123,23 @@ html
                                             tr
                                                 th Email ID
                                                 th Date Requested
-                                                th Hours Requested
-                                                th Paid/UnPaid
+                                                th Time Requested
+                                                th Duration
+                                                th Paid?
                                         tbody 
-                                            each request in requestPending
+                                            each request in unpaidSessions
                                                 tr("row_id"=request.id, "email_id"=request.emailId, "hours_requested"=request.hoursRequested)
                                                     td= request.emailId
                                                     td= request.dateRequested 
-                                                    td= request.hoursRequested
+                                                    td= request.dateRequested
+                                                    td= request.duration
                                                     td.approve-deny
                                                         select.approve-deny-select
                                                             option(value, disabled, selected) Review
-                                                            option(value='A') Accept 
-                                                            option(value='D') Deny
+                                                            option(value='A') Paid
                                     .row
                                         .input-field
                                             button.btn-large.waves-effect.waves-light.green(type='submit', name='action') Submit
-
-        div(class="section no-pad-bot" id="index-banner")    
-            div(class="container")
-                div(class="row center")
-                    div(class="col s12 m15")
-                        div(class="card-panel light-grey")
-                            h3(class="header green-text") Payment History
-                            div(class="row center") 
-                            table 
-                                thead 
-                                    th Email ID
-                                    th Date Requested
-                                    th Hours Requested
-                                    th Accept/Deny 
-                                    th Reveiwed By
-                                tbody
-                                    each request in requestHistory
-                                        tr
-                                            td= request.emailId 
-                                            td= request.dateRequested
-                                            td= request.hoursRequested 
-                                            td= request.isAccepted
-                                            td= request.reviewedBy
 
         div(class="section no-pad-bot" id="index-banner")    
             div(class="container")
@@ -143,8 +154,8 @@ html
                                     th Email 
                                     th Total Hours 
                                 tbody 
-                                    each member in members
+                                    each student in students
                                         tr
-                                            td= member.name 
-                                            td= member.email 
-                                            td= member.totalHours
+                                            td= student.name 
+                                            td= student.email 
+                                            td= student.totalHours

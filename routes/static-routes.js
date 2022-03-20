@@ -1,6 +1,6 @@
 const express = require('express');
 const {getAdminPage,
-      getMemberPage,
+      getStudentPage,
       getSignInPage,
       getRegisterPage,
       loginUser
@@ -8,7 +8,7 @@ const {getAdminPage,
 
 const router = express.Router();
 
-router.get('/member/:id', getMemberPage);
+router.get('/student/:id', getStudentPage);
 router.get('/admin/:id', getAdminPage);
 router.get('/', getSignInPage);
 router.post('/login', loginUser);

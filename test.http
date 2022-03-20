@@ -1,0 +1,14 @@
+# definition
+@apiRoot = http://localhost:3000
+
+# usage
+GET {{apiRoot}}/api/session?unpaid
+
+
+###
+GET {{apiRoot}}/api/student/JpKAphREb22gIUxRIamb
+Content-Type: application/json
+
+{
+    "isAdmin": true
+}

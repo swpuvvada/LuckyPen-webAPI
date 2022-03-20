@@ -1,10 +1,12 @@
 class SessionRequest{
-    constructor(id, emailId, dateRequested, timeRequested, cost, isPaid) {
+constructor(id, emailId, dateRequested, startTime, hoursRequested, duration, isAccepted, isPaid){
         this.id = id;
         this.emailId = emailId;
         this.dateRequested = dateRequested;
-        this.timeRequested = timeRequested;
-        this.cost = cost;
+        this.startTime = startTime;
+        this.hoursRequested = hoursRequested;
+        this.duration = duration;
+        this.isAccepted = isAccepted;
         this.isPaid = isPaid;
     }
 }
