@@ -9,7 +9,9 @@ const firestore = firebase.firestore();
 const addSession = async (req, res, next) => {
     try {
         const data = req.body;
+        data.duration = null;
         data.isPaid = null;
+        data.isAccepted = null;
         await firestore.collection('tutorSessions').doc().set(data);
         res.status(200).send({message: 'Request saved successfully'});
     } catch(error) {
@@ -44,12 +46,13 @@ const getSessions = async(req, res, next) => {
 }
 
 //For Schedule table of Student page
-const getScheduledSessions = async(req, res, next) => {
+const getScheduledSessions = async(emailId) => {
     let sessions = [];
     try {
-        await firestore.collection('tutorSessions').where("isPaid", '==', null)
-        if (!data.empty) {
-            data.forEach(doc => {
+        await firestore.collection('tutorSessions').where('emailId', '==', emailId).where("duration", '==', null)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
                 const session = new SessionRequest(
                     doc.id,
                     doc.data().emailId,
@@ -62,21 +65,25 @@ const getScheduledSessions = async(req, res, next) => {
                     doc.data().isPaid
                 );
                 sessions.push(session);
-            })
-        }
-        res.send(sessions);
+            });
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
     } catch (error) {
-        res.status(400).send(error.message);
+        console.log(error.message);
     }
+    return sessions;
 }
 
 //For Payment table on Student page
-const getCompletedSessions = async(req, res, next) => {
+const getCompletedSessions = async(emailId) => {
     let sessions = [];
     try {
-        await firestore.collection('tutorSessions').where("isAccepted", "==", "A").where("duration", "!=", null)
-        if (!data.empty) {
-            data.forEach(doc => {
+        await firestore.collection('tutorSessions').where('emailId', '==', emailId).where("isAccepted", "==", "A").where("duration", "!=", null)
+        .get()
+        .then((querySnapshot) => {
+            querySnapshot.forEach((doc) => {
                 const session = new SessionRequest(
                     doc.id,
                     doc.data().emailId,
@@ -89,12 +96,15 @@ const getCompletedSessions = async(req, res, next) => {
                     doc.data().isPaid
                 );
                 sessions.push(session);
-            })
-        }
-        res.send(sessions);
+            });
+        })
+        .catch((error) => {
+            console.log(error.message);
+        });
     } catch (error) {
-        res.status(400).send(error.message);
+        console.log(error.message);
     }
+    return sessions;
 }
 
 // get all volunteer hour history (for students)
@@ -142,13 +152,11 @@ const getSessionsByEmailInternal = async (emailId) => {
 // TODO: Accept/Deny student hour request (used by Admin) 
 const updateSessionsRecord = async (req, res, next) => {
     try{
-        let totalHoursToUpdate = {};
-        let adminEmail = req.body.adminEmail;
+        // let adminEmail = req.body.adminEmail;
         let reviewedHours = req.body.reviewedHours;
         for (let idx in reviewedHours) {
             let data = reviewedHours[idx];
             let documentId = data.id;
-            data.reviewedBy = adminEmail;
             // data.dateReviewed = getCurrentDate();
             // if (data.isPaid == 'P') {
             //     let emailId = data.emailId;
@@ -158,11 +166,11 @@ const updateSessionsRecord = async (req, res, next) => {
             //         totalHoursToUpdate[emailId] = parseInt(data.hoursRequested);
             //     }
             // }
-            await firestore.collection('volunteerHours').doc(documentId).update(data);
+            await firestore.collection('tutorSessions').doc(documentId).update(data);
         }
 
         // await updateStudentData(totalHoursToUpdate);
-        res.status(200).send({message: 'Volunteer Hour record updated successfuly'});
+        res.status(200).send({message: 'Session record updated successfuly'});
     }catch (error){
         res.status(400).send({error: error.message});
     }
@@ -182,7 +190,7 @@ const getCurrentDate = () =>{
 const getActiveSessions = async () => {
     let sessions = [];
     try{
-        await firestore.collection('tutorSessions').where("isPaid", '!=', null).where("isApproved", '==', 'A').where("duration", '==', !null)
+        await firestore.collection('tutorSessions').where("isPaid", '==', null).where("isAccepted", '==', 'A').where("duration", '==', null)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
@@ -254,7 +262,7 @@ const getUnPaidSessions = async (req, res, next) => {
 const getUnPaidSessionsInternal = async () => {
     let sessions = [];
     try{
-        await firestore.collection('tutorSessions').where("isPaid", '==', null)
+        await firestore.collection('tutorSessions').where("duration", '!=', null).where("isPaid", '==', null)
             .get()
             .then((querySnapshot) => {
                 querySnapshot.forEach((doc) => {
@@ -273,7 +281,7 @@ const getUnPaidSessionsInternal = async () => {
                 });
             })
             .catch((error) => {
-                res.status(400).send(error.message);
+                console.log(error.message);
             });
     } catch (error) {
         console.log(error.massage);

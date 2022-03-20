@@ -1,7 +1,7 @@
 'use strict';
 const path = require('path');
 const {getAllStudentsInternal, getStudentByEmailInternal, getStudentInternal} = require('./studentController');
-const {getSessionsByEmailInternal, getPaidSessionsInternal, getUnPaidSessionsInternal, getActiveSessions, getUnApprovedSessions} = require('./sessionController');
+const {getScheduledSessions, getCompletedSessions, getPaidSessionsInternal, getUnPaidSessionsInternal, getActiveSessions, getUnApprovedSessions} = require('./sessionController');
 
 const getStudentPage = async(req, res, next) => {
     try {
@@ -10,8 +10,8 @@ const getStudentPage = async(req, res, next) => {
             res.send({url: '/'});
         }
 
-        let scheduledSessions = await getSessionsByEmailInternal(user.email);
-        let completedSessions = await getSessionsByEmailInternal(user.email);
+        let scheduledSessions = await getScheduledSessions(user.email);
+        let completedSessions = await getCompletedSessions(user.email);
         res.render('student', 
                 {
                     FullName: user.name, 
@@ -46,7 +46,9 @@ const getAdminPage = async(req, res, next) => {
                     Title: 'President', 
                     students: students, 
                     paidSessions: paidSessions, 
-                    unpaidSessions: unpaidSessions
+                    unpaidSessions: unpaidSessions,
+                    activeSessions: activeSessions,
+                    unApprovedSessions: unApprovedSessions
                 });
     } catch(error) {
         res.status(404).send(error.message);
